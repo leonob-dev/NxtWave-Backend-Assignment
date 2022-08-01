@@ -230,20 +230,20 @@ def get_quote_tag_table():
 quotes_file = get_quotes_file()
 tags_list = get_all_tags(quotes_file)
 
-create_tags_table()
-insert_data_into_tags_tables(tags_list)
-tags_table_list = get_tags_table()
+# create_tags_table()
+# insert_data_into_tags_tables(tags_list)
+# tags_table_list = get_tags_table()
 
-create_authors_table()
-insert_data_into_authors_table(quotes_file)
-author_table_list = get_author_table()
+# create_authors_table()
+# insert_data_into_authors_table(quotes_file)
+# author_table_list = get_author_table()
 
-create_quotes_table()
-insert_data_into_quotes_table(quotes_file,author_table_list)
+# create_quotes_table()
+# insert_data_into_quotes_table(quotes_file,author_table_list)
 quotes_table_list = get_quotes_table()
 
-create_quote_tag_table()
-insert_data_into_quote_tag_table(quotes_file["quotes"],quotes_table_list,tags_table_list)
-each_quote_list = get_quote_tag_table()
+# create_quote_tag_table()
+# insert_data_into_quote_tag_table(quotes_file["quotes"],quotes_table_list,tags_table_list)
+# each_quote_list = get_quote_tag_table()
 
 
