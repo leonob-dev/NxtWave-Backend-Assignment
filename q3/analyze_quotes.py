@@ -36,9 +36,38 @@ def total_quotes_by_author(author_name):
 def authors_with_maximum_no_of_quotes(number):
   connection = connect_to_db()
   cursor = connection.cursor()
+  cursor.execute("""
+    SELECT authors.name,count(quotes.id) AS total_quotes
+    FROM quotes INNER JOIN authors on quotes.author_id = authors.id
+    GROUP BY author_id 
+    ORDER BY total_quotes DESC, authors.name ASC
+    LIMIT ?
+  """,[number])
+  total_quotes_by_author = cursor.fetchall()
+  for i in total_quotes_by_author:
+    print(i)
 
-  cursor.execute()
+  connection.commit()
+  connection.close()
 
-total_quotes_in_website()
 
-total_quotes_by_author("Albert Einstein")
+def max_min_avg_no_of_tags():
+  connection = connect_to_db()
+  cursor = connection.cursor()
+
+  cursor.execute("""
+    SELECT quote_id,count(tag_id)
+    FROM quote_tag
+    GROUP BY quote_id
+  """)
+  total_tags_by_quote = cursor.fetchall()
+  for i in total_tags_by_quote:
+    print(i)
+
+# total_quotes_in_website()
+
+# total_quotes_by_author("Albert Einstein")
+
+# authors_with_maximum_no_of_quotes(20)
+
+max_min_avg_no_of_tags()

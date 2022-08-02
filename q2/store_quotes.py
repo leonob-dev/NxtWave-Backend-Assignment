@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import sqlite3
 import json
 
@@ -157,8 +158,11 @@ def insert_data_into_quote_tag_table(quotes_file,quotes_table_list,tags_table_li
   for each_quote in quotes_file:
     quote_id = get_quote_id(each_quote["quote"],quotes_table_list)
     tags_ids_list = get_tags_ids(each_quote["tags"],tags_table_list)
-    for each_tag_id in tags_ids_list:
-      cursor.execute("INSERT INTO quote_tag('quote_id','tag_id') VALUES(?,?)",[quote_id,each_tag_id])
+    if len(tags_ids_list) == 0:
+       cursor.execute("INSERT INTO quote_tag('quote_id','tag_id') VALUES(?,?)",[quote_id,NULL])
+    else:
+      for each_tag_id in tags_ids_list:
+        cursor.execute("INSERT INTO quote_tag('quote_id','tag_id') VALUES(?,?)",[quote_id,each_tag_id])
 
   connection.commit()
   connection.close()
@@ -232,7 +236,7 @@ tags_list = get_all_tags(quotes_file)
 
 # create_tags_table()
 # insert_data_into_tags_tables(tags_list)
-# tags_table_list = get_tags_table()
+tags_table_list = get_tags_table()
 
 # create_authors_table()
 # insert_data_into_authors_table(quotes_file)
@@ -243,7 +247,7 @@ tags_list = get_all_tags(quotes_file)
 quotes_table_list = get_quotes_table()
 
 # create_quote_tag_table()
-# insert_data_into_quote_tag_table(quotes_file["quotes"],quotes_table_list,tags_table_list)
+insert_data_into_quote_tag_table(quotes_file["quotes"],quotes_table_list,tags_table_list)
 # each_quote_list = get_quote_tag_table()
 
 
