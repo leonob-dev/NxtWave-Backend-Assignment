@@ -87,6 +87,7 @@ def create_quotes_table():
         CREATE TABLE QUOTES(
           id INTEGER NOT NULL PRIMARY KEY,
           quote TEXT,
+          no_of_tags INTEGER,
           author_id INTEGER,
           FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
         )
@@ -144,8 +145,14 @@ def insert_data_into_quotes_table(quotes_file,author_table_list):
 
   for each_quote in quotes_file["quotes"]:
     quote = each_quote["quote"]
+    no_of_tags = len(each_quote["tags"])
     author_id = get_author_id(each_quote["author"],author_table_list)
-    cursor.execute("INSERT INTO QUOTES('quote','author_id')VALUES(?,?)",[quote,author_id])
+
+    cursor.execute("""
+    INSERT INTO 
+    QUOTES('quote','no_of_tags','author_id')
+    VALUES(?,?,?)"""
+    ,[quote,no_of_tags,author_id])
 
   connection.commit()
   connection.close()
@@ -158,8 +165,9 @@ def insert_data_into_quote_tag_table(quotes_file,quotes_table_list,tags_table_li
   for each_quote in quotes_file:
     quote_id = get_quote_id(each_quote["quote"],quotes_table_list)
     tags_ids_list = get_tags_ids(each_quote["tags"],tags_table_list)
+
     if len(tags_ids_list) == 0:
-       cursor.execute("INSERT INTO quote_tag('quote_id','tag_id') VALUES(?,?)",[quote_id,NULL])
+      cursor.execute("INSERT INTO quote_tag('quote_id') VALUES(?)",[quote_id])
     else:
       for each_tag_id in tags_ids_list:
         cursor.execute("INSERT INTO quote_tag('quote_id','tag_id') VALUES(?,?)",[quote_id,each_tag_id])
@@ -234,20 +242,20 @@ def get_quote_tag_table():
 quotes_file = get_quotes_file()
 tags_list = get_all_tags(quotes_file)
 
-# create_tags_table()
-# insert_data_into_tags_tables(tags_list)
+create_tags_table()
+insert_data_into_tags_tables(tags_list)
 tags_table_list = get_tags_table()
 
-# create_authors_table()
-# insert_data_into_authors_table(quotes_file)
-# author_table_list = get_author_table()
+create_authors_table()
+insert_data_into_authors_table(quotes_file)
+author_table_list = get_author_table()
 
-# create_quotes_table()
-# insert_data_into_quotes_table(quotes_file,author_table_list)
+create_quotes_table()
+insert_data_into_quotes_table(quotes_file,author_table_list)
 quotes_table_list = get_quotes_table()
 
-# create_quote_tag_table()
+create_quote_tag_table()
 insert_data_into_quote_tag_table(quotes_file["quotes"],quotes_table_list,tags_table_list)
-# each_quote_list = get_quote_tag_table()
+each_quote_list = get_quote_tag_table()
 
 

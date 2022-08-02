@@ -56,18 +56,24 @@ def max_min_avg_no_of_tags():
   cursor = connection.cursor()
 
   cursor.execute("""
-    SELECT quote_id,count(tag_id)
-    FROM quote_tag
-    GROUP BY quote_id
+    SELECT 
+      MAX(no_of_tags),
+      MIN(no_of_tags),
+      AVG(no_of_tags)
+    FROM quotes
   """)
-  total_tags_by_quote = cursor.fetchall()
-  for i in total_tags_by_quote:
-    print(i)
+  max_min_avg_of_quotes = cursor.fetchall()
+  print(f'MAX No_of_Tags : {max_min_avg_of_quotes[0][0]}')
+  print(f'MIN No_of_Tags : {max_min_avg_of_quotes[0][1]}')
+  print(f'AVG No_of_Tags : {max_min_avg_of_quotes[0][2]}')
 
-# total_quotes_in_website()
+  connection.commit()
+  connection.close()
 
-# total_quotes_by_author("Albert Einstein")
+total_quotes_in_website()
 
-# authors_with_maximum_no_of_quotes(20)
+total_quotes_by_author("Albert Einstein")
+
+authors_with_maximum_no_of_quotes(20)
 
 max_min_avg_no_of_tags()
