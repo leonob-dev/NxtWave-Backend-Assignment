@@ -10,6 +10,7 @@ def request_and_soup_page(page_url):
     html_page = requests.get(page_url).content
     soup = BeautifulSoup(html_page,'html.parser')
     return soup
+
 def create_authors_dict(each_author_details):
   
   authors_name  =each_author_details[0]
@@ -35,14 +36,12 @@ def create_authors_dict_list(authors_details):
   print("authors_dict_list is created")
   return authors_list
 
-def  get_authors_dob_details(author_page_link):
+def get_authors_dob_details(author_page_link):
   authors_deatils = request_and_soup_page(author_page_link)
   dob_of_author = authors_deatils.find("span",class_="author-born-date").text 
   birth_place_of_author = authors_deatils.find("span",class_="author-born-location").text
   author_born_details = f'{dob_of_author} {birth_place_of_author}'
   return author_born_details
-
-
 
 def get_authors_details(quotes_container):
   print("getting authors details")
@@ -105,7 +104,6 @@ def generate_quotes_page_urls():
   print("Quotes_urls are generated")
   return quotes_page_urls_list
 
-
 def scrape_quotes_page():
   print("scraping of quotes_page started ")
   quotes_page_urls_list = generate_quotes_page_urls()
@@ -115,14 +113,12 @@ def scrape_quotes_page():
   
   return quotes_containers,quotes_in_all_pages
 
-
 def scrape_pages():
   print("scraping of pages is started ")
   quotes_containers,quotes_in_all_pages = scrape_quotes_page()
   authors_dict = scrape_authors_page(quotes_containers)
   print("Scraping of pages is completed")
   return quotes_in_all_pages,authors_dict
-
 
 def create_quotes_json():
   quotes_dict_list,authors_dict_list = scrape_pages()
