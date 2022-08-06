@@ -74,7 +74,7 @@ def max_min_avg_no_of_tags():
     );
   """)
   max_min_avg_of_tags = connect_and_fetch_from_db(query)
-  
+  print(" ")
   print(f'MAX No_of_Tags : {max_min_avg_of_tags[0][0]}')
   print(f'MIN No_of_Tags : {max_min_avg_of_tags[0][1]}')
   print(f'AVG No_of_Tags : {max_min_avg_of_tags[0][2]}')
