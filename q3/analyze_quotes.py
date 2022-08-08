@@ -31,14 +31,15 @@ def total_quotes_by_author(author_name):
 
   query = ("""
       SELECT 
-          COUNT(quote_id) as total_quotes
+          COUNT(id) as total_quotes
       FROM 
-          author_quote 
+          quotes
       WHERE author_id = (
               SELECT id
               FROM authors
               WHERE name = ?
-            ); 
+            )
+      GROUP BY author_id;
      """)
   total_quotes = connect_and_fetch_from_db(query,[author_name])
   print(" ")
@@ -48,9 +49,9 @@ def authors_with_maximum_no_of_quotes(number):
   
   query = ("""
       SELECT 
-          authors.name,count(author_quote.quote_id) AS total_quotes
+          authors.name,count(quotes.id) AS total_quotes
       FROM 
-        author_quote LEFT JOIN authors on author_quote.author_id = authors.id
+        quotes INNER JOIN authors on quotes.author_id = authors.id
       GROUP BY authors.name 
       ORDER BY total_quotes DESC, authors.name ASC
       LIMIT ?;

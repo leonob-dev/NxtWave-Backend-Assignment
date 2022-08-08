@@ -60,17 +60,6 @@ def create_quote_tag_id_dict(quotes_dict,tags_dict):
 
   return quote_tag_ids_dict
 
-def create_author_quote_ids_dict(authors_dict,quotes_dict):
-  author_quote_ids_dict = {}
-  for authors_id,each_author in authors_dict.items():
-    quote_ids = []
-    for quote_id,each_quote in quotes_dict.items():
-      if each_author["name"] == each_quote["author"]:
-        quote_ids.append(quote_id)
-    if len(quote_ids) != 0:
-      author_quote_ids_dict[authors_id] = quote_ids
-  return author_quote_ids_dict
-
 def enable_foriegn_key_constraints_in_db():
   connection = sqlite3.connect("quotes.db")
   print("Connected to db")
@@ -126,7 +115,8 @@ def create_quotes_table():
   sql_query = ("""
         CREATE TABLE quotes(
             id INTEGER NOT NULL PRIMARY KEY,
-            quote TEXT); 
+            quote TEXT,
+            author_id INT); 
     """)
 
   create_table_and_commit_to_db(sql_query)
@@ -191,19 +181,20 @@ def insert_data_into_tags_tables(tags_dict):
 
   print("Data Inserted Into Tags Table")
 
-def insert_data_into_quotes_table(quotes_dict):
- 
+def insert_data_into_quotes_table(quotes_dict,authors_dict):
   for quote_id,each_quote in quotes_dict.items():
     quote = each_quote["quote"]
-
+    for author_id,author_details in authors_dict.items():
+      if each_quote["author"] == author_details["name"]:
+        authors_id = author_id
     sql_query = ("""
               INSERT INTO 
-                  quotes('id','quote')
+                  quotes('id','quote','author_id')
               VALUES
-                  (?,?);
+                  (?,?,?);
             """)
-    insert_data_and_commit_to_db(sql_query,[quote_id,quote])
-
+    insert_data_and_commit_to_db(sql_query,[quote_id,quote,authors_id])
+    author_id += 1
   print("Data Inserted Into Quotes Table")
 
 def insert_data_into_quote_tag_table(quote_tag_ids_dict):
@@ -221,20 +212,6 @@ def insert_data_into_quote_tag_table(quote_tag_ids_dict):
 
   print("Data Inserted Into Quote_Tag Table")
       
-def insert_data_into_author_quote_table(author_quote_ids_dict):
-  
-  for author_id,quote_ids_list in author_quote_ids_dict.items():
-    for quote_id in quote_ids_list:
-
-      sql_query = ("""
-              INSERT INTO 
-                  author_quote('author_id','quote_id') 
-              VALUES
-              (?,?);
-          """)
-      insert_data_and_commit_to_db(sql_query,[author_id,quote_id])
-
-  print("Data Inserted Into Author_Quote Table")
 
 def get_quotes_json_file_and_create_respective_dicts():
   quotes_file = get_quotes_json_file()
@@ -242,9 +219,8 @@ def get_quotes_json_file_and_create_respective_dicts():
   quotes_dict = create_quotes_dict_from_quotes_json_file(quotes_file)
   authors_dict = create_authors_dict_from_quotes_json_file(quotes_file)
   quote_tag_ids_dict = create_quote_tag_id_dict(quotes_dict,tags_dict)
-  author_quote_ids_dict = create_author_quote_ids_dict(authors_dict,quotes_dict)
 
-  return (tags_dict,quotes_dict,authors_dict,quote_tag_ids_dict,author_quote_ids_dict)
+  return (tags_dict,quotes_dict,authors_dict,quote_tag_ids_dict)
 
 def create_tables_in_db():
   enable_foriegn_key_constraints_in_db()
@@ -252,15 +228,13 @@ def create_tables_in_db():
   create_authors_table()
   create_quotes_table()
   create_quote_tag_table()
-  create_author_quote_table()
 
 def insert_data_into_tables_in_db(extracted_data_from_quote_json):
-  tags_dict,quotes_dict,authors_dict,quote_tag_ids_dict,author_quote_ids_dict = extracted_data_from_quote_json
+  tags_dict,quotes_dict,authors_dict,quote_tag_ids_dict = extracted_data_from_quote_json
   insert_data_into_tags_tables(tags_dict)
   insert_data_into_authors_table(authors_dict)
-  insert_data_into_quotes_table(quotes_dict)
+  insert_data_into_quotes_table(quotes_dict,authors_dict)
   insert_data_into_quote_tag_table(quote_tag_ids_dict)
-  insert_data_into_author_quote_table(author_quote_ids_dict)
 
 def extract_data_and_store_in_db():
   extracted_data_from_quote_json =  get_quotes_json_file_and_create_respective_dicts()
